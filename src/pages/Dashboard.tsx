@@ -19,8 +19,8 @@ const Dashboard = () => {
     <AdminLayout currentPage="dashboard">
       <div className="space-y-6">
         {/* Success Message */}
-        <Alert className="border-admin-success bg-admin-success/10">
-          <AlertTriangle className="h-4 w-4" />
+        <Alert className="border-semantic-success bg-semantic-success/10">
+          <AlertTriangle className="h-4 w-4 text-semantic-success" />
           <AlertDescription>
             Successfully signed in as arthurluguyen.
           </AlertDescription>

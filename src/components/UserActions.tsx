@@ -61,7 +61,7 @@ const UserActions = ({ userId, userEmail, userStatus }: UserActionsProps) => {
         {userStatus !== 'Banned' ? (
           <DropdownMenuItem 
             onClick={() => handleAction('Ban')}
-            className="text-admin-warning focus:text-admin-warning"
+            className="text-semantic-warning focus:text-semantic-warning"
           >
             <Ban className="mr-2 h-4 w-4" />
             Ban User
@@ -69,7 +69,7 @@ const UserActions = ({ userId, userEmail, userStatus }: UserActionsProps) => {
         ) : (
           <DropdownMenuItem 
             onClick={() => handleAction('Unban')}
-            className="text-admin-success focus:text-admin-success"
+            className="text-semantic-success focus:text-semantic-success"
           >
             <Shield className="mr-2 h-4 w-4" />
             Unban User
@@ -80,7 +80,7 @@ const UserActions = ({ userId, userEmail, userStatus }: UserActionsProps) => {
         
         <DropdownMenuItem 
           onClick={() => handleAction('Delete')}
-          className="text-admin-danger focus:text-admin-danger"
+          className="text-semantic-error focus:text-semantic-error"
         >
           <Trash2 className="mr-2 h-4 w-4" />
           Delete User

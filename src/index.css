@@ -44,11 +44,27 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     
-    /* Admin Portal Colors */
-    --admin-primary: 217.2 91.2% 59.8%;
-    --admin-success: 142.1 70.6% 45.3%;
-    --admin-warning: 47.9 95.8% 53.1%;
-    --admin-danger: 0 84.2% 60.2%;
+    /* Brand Colors */
+    --brand-primary: 320 100% 78%;  /* magenta/300 */
+    --brand-secondary: 180 100% 35%; /* aqua/700 */
+    --brand-tertiary: 210 100% 40%;  /* blue/600 */
+    --brand-light-primary: 320 100% 90%; /* magenta/200@20 */
+    
+    /* Accent Colors */
+    --accent-1: 320 100% 35%; /* magenta/700 */
+    --accent-2: 180 100% 35%; /* aqua/700 */
+    --accent-3: 210 100% 35%; /* blue/700 */
+    --accent-4: 45 100% 30%;  /* yellow/600 */
+    
+    /* Semantic Colors */
+    --semantic-success: 120 100% 25%; /* green/500 */
+    --semantic-error: 25 100% 50%;    /* orange/500 */
+    --semantic-warning: 45 100% 50%;  /* yellow/500 */
+    --semantic-info: 210 100% 50%;    /* blue/500 */
+    
+    /* Stroke Colors */
+    --stroke-primary: 215 20% 65%;   /* slate/600 */
+    --stroke-strong: 215 25% 85%;
   }
 
   .dark {
@@ -79,7 +95,28 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+    
+    /* Brand Colors - Dark Mode */
+    --brand-primary: 320 100% 95%;   /* magenta/1100 */
+    --brand-secondary: 180 100% 90%; /* aqua/1100 */
+    --brand-tertiary: 210 100% 70%;  /* blue/900 */
+    --brand-light-primary: 320 100% 90%; /* magenta/200@20 */
+    
+    /* Accent Colors - Dark Mode */
+    --accent-1: 320 100% 40%; /* magenta/800 */
+    --accent-2: 180 100% 40%; /* aqua/800 */
+    --accent-3: 210 100% 40%; /* blue/800 */
+    --accent-4: 45 100% 40%;  /* yellow/800 */
+    
+    /* Semantic Colors - Dark Mode */
+    --semantic-success: 120 100% 40%; /* green/800 */
+    --semantic-error: 25 100% 40%;    /* orange/800 */
+    --semantic-warning: 45 100% 40%;  /* yellow/800 */
+    --semantic-info: 210 100% 40%;    /* blue/800 */
+    
+    /* Stroke Colors - Dark Mode */
+    --stroke-primary: 215 10% 50%;   /* slate/500 */
+    --stroke-strong: 215 25% 35%;
 }
 
 @layer base {

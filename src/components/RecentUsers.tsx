@@ -108,13 +108,13 @@ const RecentUsers = () => {
 
   const getTierBadge = (tier: RecentUser['tier']) => {
     const colors = {
-      'Free': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
-      'Pro': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      'Enterprise': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+      'Free': 'bg-stroke-primary/20 text-foreground border-stroke-primary',
+      'Pro': 'bg-brand-tertiary/20 text-brand-tertiary border-brand-tertiary',
+      'Enterprise': 'bg-brand-primary/20 text-brand-primary border-brand-primary'
     };
     
     return (
-      <Badge className={colors[tier]}>
+      <Badge variant="outline" className={colors[tier]}>
         {tier}
       </Badge>
     );
@@ -123,9 +123,9 @@ const RecentUsers = () => {
   const getTrendIcon = (trend: RecentUser['trend']) => {
     switch (trend) {
       case 'up':
-        return <TrendingUp className="h-3 w-3 text-admin-success" />;
+        return <TrendingUp className="h-3 w-3 text-semantic-success" />;
       case 'down':
-        return <TrendingDown className="h-3 w-3 text-admin-danger" />;
+        return <TrendingDown className="h-3 w-3 text-semantic-error" />;
       default:
         return <Minus className="h-3 w-3 text-muted-foreground" />;
     }

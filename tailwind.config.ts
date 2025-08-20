@@ -70,6 +70,28 @@ export default {
 					success: 'hsl(var(--admin-success))',
 					warning: 'hsl(var(--admin-warning))',
 					danger: 'hsl(var(--admin-danger))'
+				},
+				brand: {
+					primary: 'hsl(var(--brand-primary))',
+					secondary: 'hsl(var(--brand-secondary))',
+					tertiary: 'hsl(var(--brand-tertiary))',
+					'light-primary': 'hsl(var(--brand-light-primary))'
+				},
+				'theme-accent': {
+					1: 'hsl(var(--accent-1))',
+					2: 'hsl(var(--accent-2))',
+					3: 'hsl(var(--accent-3))',
+					4: 'hsl(var(--accent-4))'
+				},
+				semantic: {
+					success: 'hsl(var(--semantic-success))',
+					error: 'hsl(var(--semantic-error))',
+					warning: 'hsl(var(--semantic-warning))',
+					info: 'hsl(var(--semantic-info))'
+				},
+				stroke: {
+					primary: 'hsl(var(--stroke-primary))',
+					strong: 'hsl(var(--stroke-strong))'
 				}
 			},
 			borderRadius: {

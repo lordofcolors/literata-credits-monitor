@@ -14,10 +14,10 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, subtitle, icon: Icon, iconColor = 'blue', onClick, clickable = false }: StatCardProps) => {
   const iconColorClasses = {
-    blue: 'text-admin-primary',
-    green: 'text-admin-success', 
-    yellow: 'text-admin-warning',
-    cyan: 'text-admin-primary'
+    blue: 'text-brand-tertiary',
+    green: 'text-semantic-success', 
+    yellow: 'text-semantic-warning',
+    cyan: 'text-theme-accent-2'
   };
 
   return (
