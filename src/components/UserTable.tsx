@@ -3,9 +3,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, MoreHorizontal } from 'lucide-react';
+import { Search, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import UserActions from '@/components/UserActions';
 
 interface User {
   id: string;
@@ -13,8 +14,11 @@ interface User {
   status: 'Authorized' | 'Banned' | 'Suspended' | 'Active';
   creditsUsed: number;
   creditsRemaining: number;
+  dailyUsage: number;
+  apiCalls: number;
   lastActivity: string;
   tier: 'Free' | 'Pro' | 'Enterprise';
+  trend: 'up' | 'down' | 'stable';
 }
 
 // Mock data for different user types
@@ -40,8 +44,11 @@ const generateMockUsers = (type: string, count: number): User[] => {
       status: status as User['status'],
       creditsUsed: Math.floor(Math.random() * 2000) + 100,
       creditsRemaining: Math.floor(Math.random() * 1500) + 500,
+      dailyUsage: Math.floor(Math.random() * 100) + 1,
+      apiCalls: Math.floor(Math.random() * 500) + 10,
       lastActivity: i === 0 ? 'Never' : `${Math.floor(Math.random() * 10) + 1} ${Math.random() > 0.5 ? 'hours' : 'days'} ago`,
-      tier: i < baseUsers.length ? baseUser.tier : (['Free', 'Pro', 'Enterprise'][Math.floor(Math.random() * 3)] as User['tier'])
+      tier: i < baseUsers.length ? baseUser.tier : (['Free', 'Pro', 'Enterprise'][Math.floor(Math.random() * 3)] as User['tier']),
+      trend: (['up', 'down', 'stable'][Math.floor(Math.random() * 3)] as User['trend'])
     });
   }
   
@@ -106,9 +113,9 @@ const UserTable = () => {
 
   const getTierBadge = (tier: User['tier']) => {
     const colors = {
-      'Free': 'bg-gray-100 text-gray-800',
-      'Pro': 'bg-blue-100 text-blue-800',
-      'Enterprise': 'bg-purple-100 text-purple-800'
+      'Free': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
+      'Pro': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      'Enterprise': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
     };
     
     return (
@@ -116,6 +123,17 @@ const UserTable = () => {
         {tier}
       </Badge>
     );
+  };
+
+  const getTrendIcon = (trend: User['trend']) => {
+    switch (trend) {
+      case 'up':
+        return <TrendingUp className="h-3 w-3 text-admin-success" />;
+      case 'down':
+        return <TrendingDown className="h-3 w-3 text-admin-danger" />;
+      default:
+        return <Minus className="h-3 w-3 text-muted-foreground" />;
+    }
   };
 
   return (
@@ -145,7 +163,7 @@ const UserTable = () => {
             <SelectTrigger className="w-40">
               <SelectValue placeholder="All Users" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-background border shadow-lg z-50">
               <SelectItem value="All">All Users</SelectItem>
               <SelectItem value="Authorized">Authorized Users</SelectItem>
               <SelectItem value="Active">Active Users</SelectItem>
@@ -179,6 +197,9 @@ const UserTable = () => {
                   <th className="text-left py-3 text-sm font-medium text-muted-foreground">TIER</th>
                   <th className="text-left py-3 text-sm font-medium text-muted-foreground">CREDITS USED</th>
                   <th className="text-left py-3 text-sm font-medium text-muted-foreground">CREDITS LEFT</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">DAILY USAGE</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">API CALLS</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">TREND</th>
                   <th className="text-left py-3 text-sm font-medium text-muted-foreground">LAST ACTIVITY</th>
                   <th className="text-left py-3 text-sm font-medium text-muted-foreground">ACTIONS</th>
                 </tr>
@@ -191,11 +212,16 @@ const UserTable = () => {
                     <td className="py-4">{getTierBadge(user.tier)}</td>
                     <td className="py-4 text-sm">{user.creditsUsed.toLocaleString()}</td>
                     <td className="py-4 text-sm">{user.creditsRemaining.toLocaleString()}</td>
+                    <td className="py-4 text-sm">{user.dailyUsage}</td>
+                    <td className="py-4 text-sm">{user.apiCalls}</td>
+                    <td className="py-4">{getTrendIcon(user.trend)}</td>
                     <td className="py-4 text-sm text-muted-foreground">{user.lastActivity}</td>
                     <td className="py-4">
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      <UserActions 
+                        userId={user.id} 
+                        userEmail={user.email} 
+                        userStatus={user.status}
+                      />
                     </td>
                   </tr>
                 ))}

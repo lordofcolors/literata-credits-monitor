@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface RecentUser {
@@ -11,7 +11,13 @@ interface RecentUser {
   name: string;
   status: 'Authorized' | 'Banned' | 'Suspended';
   creditsUsed: number;
+  creditsRemaining: number;
+  dailyUsage: number;
+  lastActivity: string;
   registrationDate: string;
+  tier: 'Free' | 'Pro' | 'Enterprise';
+  apiCalls: number;
+  trend: 'up' | 'down' | 'stable';
 }
 
 const RecentUsers = () => {
@@ -24,7 +30,13 @@ const RecentUsers = () => {
       name: 'David Tanner',
       status: 'Authorized',
       creditsUsed: 1250,
-      registrationDate: 'User registered'
+      creditsRemaining: 750,
+      dailyUsage: 45,
+      lastActivity: 'Never',
+      registrationDate: 'User registered',
+      tier: 'Free',
+      apiCalls: 156,
+      trend: 'up'
     },
     {
       id: '2',
@@ -32,7 +44,13 @@ const RecentUsers = () => {
       name: 'Test User',
       status: 'Authorized',
       creditsUsed: 890,
-      registrationDate: 'User registered'
+      creditsRemaining: 1110,
+      dailyUsage: 32,
+      lastActivity: '2 hours ago',
+      registrationDate: 'User registered',
+      tier: 'Pro',
+      apiCalls: 89,
+      trend: 'down'
     },
     {
       id: '3',
@@ -40,7 +58,13 @@ const RecentUsers = () => {
       name: 'Cuong Pham',
       status: 'Authorized', 
       creditsUsed: 2100,
-      registrationDate: 'User registered'
+      creditsRemaining: 900,
+      dailyUsage: 78,
+      lastActivity: '1 day ago',
+      registrationDate: 'User registered',
+      tier: 'Enterprise',
+      apiCalls: 234,
+      trend: 'up'
     },
     {
       id: '4',
@@ -48,7 +72,13 @@ const RecentUsers = () => {
       name: 'Unknown User',
       status: 'Authorized',
       creditsUsed: 0,
-      registrationDate: 'User registered'
+      creditsRemaining: 2000,
+      dailyUsage: 0,
+      lastActivity: 'Never',
+      registrationDate: 'User registered',
+      tier: 'Free',
+      apiCalls: 0,
+      trend: 'stable'
     },
     {
       id: '5',
@@ -56,7 +86,13 @@ const RecentUsers = () => {
       name: 'Andrew Nguyen', 
       status: 'Authorized',
       creditsUsed: 450,
-      registrationDate: 'User registered'
+      creditsRemaining: 1550,
+      dailyUsage: 18,
+      lastActivity: '3 days ago',
+      registrationDate: 'User registered',
+      tier: 'Pro',
+      apiCalls: 67,
+      trend: 'stable'
     }
   ];
 
@@ -68,6 +104,31 @@ const RecentUsers = () => {
     } as const;
     
     return <Badge variant={variants[status]}>{status}</Badge>;
+  };
+
+  const getTierBadge = (tier: RecentUser['tier']) => {
+    const colors = {
+      'Free': 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200',
+      'Pro': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      'Enterprise': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+    };
+    
+    return (
+      <Badge className={colors[tier]}>
+        {tier}
+      </Badge>
+    );
+  };
+
+  const getTrendIcon = (trend: RecentUser['trend']) => {
+    switch (trend) {
+      case 'up':
+        return <TrendingUp className="h-3 w-3 text-admin-success" />;
+      case 'down':
+        return <TrendingDown className="h-3 w-3 text-admin-danger" />;
+      default:
+        return <Minus className="h-3 w-3 text-muted-foreground" />;
+    }
   };
 
   const getInitials = (name: string) => {
@@ -85,7 +146,7 @@ const RecentUsers = () => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Recent Authenticated Users (Limited to 8)</CardTitle>
+        <CardTitle>Recent Authenticated Users</CardTitle>
         <Button variant="outline" size="sm" onClick={handleViewAll}>
           View All
         </Button>
@@ -99,40 +160,64 @@ const RecentUsers = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
-            {recentUsers.map((user) => (
-              <div 
-                key={user.id} 
-                className="flex items-center justify-between hover:bg-muted/50 p-2 rounded-lg cursor-pointer transition-colors"
-                onClick={() => handleUserClick(user.id)}
-              >
-                <div className="flex items-center space-x-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-xs">
-                      {getInitials(user.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
-                    <p className="text-xs text-muted-foreground">{user.registrationDate}</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {getStatusBadge(user.status)}
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Handle menu actions
-                    }}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">USER</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">STATUS</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">TIER</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">CREDITS USED</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">DAILY USAGE</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">API CALLS</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">TREND</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">LAST ACTIVITY</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentUsers.map((user) => (
+                  <tr 
+                    key={user.id} 
+                    className="border-b hover:bg-muted/50 cursor-pointer"
+                    onClick={() => handleUserClick(user.id)}
                   >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            ))}
+                    <td className="py-4">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarFallback className="text-xs">
+                            {getInitials(user.name)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium">{user.name}</p>
+                          <p className="text-xs text-muted-foreground">{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4">{getStatusBadge(user.status)}</td>
+                    <td className="py-4">{getTierBadge(user.tier)}</td>
+                    <td className="py-4 text-sm">{user.creditsUsed.toLocaleString()}</td>
+                    <td className="py-4 text-sm">{user.dailyUsage}</td>
+                    <td className="py-4 text-sm">{user.apiCalls}</td>
+                    <td className="py-4">{getTrendIcon(user.trend)}</td>
+                    <td className="py-4 text-sm text-muted-foreground">{user.lastActivity}</td>
+                    <td className="py-4">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Handle menu actions
+                        }}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </CardContent>
