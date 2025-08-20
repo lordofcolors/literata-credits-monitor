@@ -18,14 +18,6 @@ const Dashboard = () => {
   return (
     <AdminLayout currentPage="dashboard">
       <div className="space-y-6">
-        {/* API Connection Warning */}
-        <Alert className="border-admin-warning bg-admin-warning/10">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>AI Credits API Connection Issue:</strong> Unable to connect to AI Credits backend. Some data may be unavailable.
-          </AlertDescription>
-        </Alert>
-
         {/* Success Message */}
         <Alert className="border-admin-success bg-admin-success/10">
           <AlertTriangle className="h-4 w-4" />
