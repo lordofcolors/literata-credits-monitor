@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { MoreHorizontal } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface RecentUser {
   id: string;
@@ -14,6 +15,8 @@ interface RecentUser {
 }
 
 const RecentUsers = () => {
+  const navigate = useNavigate();
+  
   const recentUsers: RecentUser[] = [
     {
       id: '1',
@@ -71,11 +74,19 @@ const RecentUsers = () => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
+  const handleUserClick = (userId: string) => {
+    navigate(`/users/${userId}`);
+  };
+
+  const handleViewAll = () => {
+    navigate('/users');
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Recent Authenticated Users (Limited to 8)</CardTitle>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={handleViewAll}>
           View All
         </Button>
       </CardHeader>
@@ -90,7 +101,11 @@ const RecentUsers = () => {
         ) : (
           <div className="space-y-4">
             {recentUsers.map((user) => (
-              <div key={user.id} className="flex items-center justify-between">
+              <div 
+                key={user.id} 
+                className="flex items-center justify-between hover:bg-muted/50 p-2 rounded-lg cursor-pointer transition-colors"
+                onClick={() => handleUserClick(user.id)}
+              >
                 <div className="flex items-center space-x-3">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="text-xs">
@@ -105,7 +120,14 @@ const RecentUsers = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   {getStatusBadge(user.status)}
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Handle menu actions
+                    }}
+                  >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </div>

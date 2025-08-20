@@ -20,7 +20,6 @@ const App = () => (
           <Route path="/" element={<Dashboard />} />
           <Route path="/users" element={<UserManagement />} />
           <Route path="/users/:id" element={<UserProfile />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

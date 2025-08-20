@@ -6,8 +6,15 @@ import RecentUsers from '@/components/RecentUsers';
 import { Users, UserCheck, UserX, Brain } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+  const handleStatCardClick = (filter: string) => {
+    navigate(`/users?filter=${filter.toLowerCase()}`);
+  };
+
   return (
     <AdminLayout currentPage="dashboard">
       <div className="space-y-6">
@@ -35,6 +42,8 @@ const Dashboard = () => {
             subtitle="Registered users"
             icon={Users}
             iconColor="blue"
+            clickable={true}
+            onClick={() => handleStatCardClick('authorized')}
           />
           <StatCard
             title="Active Users"
@@ -42,6 +51,8 @@ const Dashboard = () => {
             subtitle="Not banned"
             icon={UserCheck}
             iconColor="green"
+            clickable={true}
+            onClick={() => handleStatCardClick('active')}
           />
           <StatCard
             title="Banned Users"
@@ -49,6 +60,8 @@ const Dashboard = () => {
             subtitle="Restricted access"
             icon={UserX}
             iconColor="yellow"
+            clickable={true}
+            onClick={() => handleStatCardClick('banned')}
           />
           <StatCard
             title="AI Credits Used"
@@ -56,6 +69,8 @@ const Dashboard = () => {
             subtitle="vs 2.5M allowed"
             icon={Brain}
             iconColor="cyan"
+            clickable={true}
+            onClick={() => handleStatCardClick('credits')}
           />
         </div>
 

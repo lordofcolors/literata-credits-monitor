@@ -8,9 +8,11 @@ interface StatCardProps {
   subtitle?: string;
   icon: LucideIcon;
   iconColor?: 'blue' | 'green' | 'yellow' | 'cyan';
+  onClick?: () => void;
+  clickable?: boolean;
 }
 
-const StatCard = ({ title, value, subtitle, icon: Icon, iconColor = 'blue' }: StatCardProps) => {
+const StatCard = ({ title, value, subtitle, icon: Icon, iconColor = 'blue', onClick, clickable = false }: StatCardProps) => {
   const iconColorClasses = {
     blue: 'text-admin-primary',
     green: 'text-admin-success', 
@@ -19,7 +21,12 @@ const StatCard = ({ title, value, subtitle, icon: Icon, iconColor = 'blue' }: St
   };
 
   return (
-    <Card>
+    <Card 
+      className={cn(
+        clickable && "cursor-pointer hover:bg-muted/50 transition-colors",
+      )}
+      onClick={clickable ? onClick : undefined}
+    >
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">

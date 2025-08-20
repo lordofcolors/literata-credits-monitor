@@ -13,7 +13,6 @@ const AdminLayout = ({ children, currentPage = 'dashboard' }: AdminLayoutProps) 
   const [searchQuery, setSearchQuery] = useState('');
   
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
     { id: 'users', label: 'Users', icon: Users },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'settings', label: 'Settings', icon: Settings },
@@ -26,7 +25,7 @@ const AdminLayout = ({ children, currentPage = 'dashboard' }: AdminLayoutProps) 
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <h1 className="text-xl font-semibold text-foreground">
-              AI Credits Admin Portal
+              Admin Portal
             </h1>
           </div>
           

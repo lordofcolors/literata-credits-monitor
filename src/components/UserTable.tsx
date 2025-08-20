@@ -4,62 +4,90 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Filter, MoreHorizontal } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 
 interface User {
   id: string;
   email: string;
-  status: 'Authorized' | 'Banned' | 'Suspended';
+  status: 'Authorized' | 'Banned' | 'Suspended' | 'Active';
   creditsUsed: number;
   creditsRemaining: number;
   lastActivity: string;
   tier: 'Free' | 'Pro' | 'Enterprise';
 }
 
-const mockUsers: User[] = [
-  {
-    id: '1',
-    email: 'david.tanner@email.com',
-    status: 'Authorized',
-    creditsUsed: 1250,
-    creditsRemaining: 750,
-    lastActivity: 'Never',
-    tier: 'Free'
-  },
-  {
-    id: '2', 
-    email: 'test@email.com',
-    status: 'Authorized',
-    creditsUsed: 890,
-    creditsRemaining: 1110,
-    lastActivity: '2 hours ago',
-    tier: 'Pro'
-  },
-  {
-    id: '3',
-    email: 'cuong.pham@email.com',
-    status: 'Authorized',
-    creditsUsed: 2100,
-    creditsRemaining: 900,
-    lastActivity: '1 day ago',
-    tier: 'Enterprise'
-  },
-  {
-    id: '4',
-    email: 'andrew.nguyen@email.com',
-    status: 'Authorized',
-    creditsUsed: 450,
-    creditsRemaining: 1550,
-    lastActivity: '3 days ago',
-    tier: 'Pro'
+// Mock data for different user types
+const generateMockUsers = (type: string, count: number): User[] => {
+  const users = [];
+  const baseUsers = [
+    { email: 'david.tanner@email.com', tier: 'Free' as const },
+    { email: 'test@email.com', tier: 'Pro' as const },
+    { email: 'cuong.pham@email.com', tier: 'Enterprise' as const },
+    { email: 'andrew.nguyen@email.com', tier: 'Pro' as const },
+    { email: 'unknown@email.com', tier: 'Free' as const },
+  ];
+
+  for (let i = 0; i < count; i++) {
+    const baseUser = baseUsers[i % baseUsers.length];
+    const status = type === 'authorized' ? 'Authorized' : 
+                  type === 'active' ? 'Active' :
+                  type === 'banned' ? 'Banned' : 'Suspended';
+    
+    users.push({
+      id: `${type}-${i + 1}`,
+      email: i < baseUsers.length ? baseUser.email : `user${i + 1}@email.com`,
+      status: status as User['status'],
+      creditsUsed: Math.floor(Math.random() * 2000) + 100,
+      creditsRemaining: Math.floor(Math.random() * 1500) + 500,
+      lastActivity: i === 0 ? 'Never' : `${Math.floor(Math.random() * 10) + 1} ${Math.random() > 0.5 ? 'hours' : 'days'} ago`,
+      tier: i < baseUsers.length ? baseUser.tier : (['Free', 'Pro', 'Enterprise'][Math.floor(Math.random() * 3)] as User['tier'])
+    });
   }
-];
+  
+  return users;
+};
 
 const UserTable = () => {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [users, setUsers] = useState<User[]>([]);
+  
+  useEffect(() => {
+    const filter = searchParams.get('filter');
+    
+    // Generate appropriate mock data based on filter
+    let mockUsers: User[] = [];
+    let count = 0;
+    
+    switch(filter) {
+      case 'authorized':
+        count = 77;
+        mockUsers = generateMockUsers('authorized', count);
+        setStatusFilter('Authorized');
+        break;
+      case 'active':
+        count = 76;
+        mockUsers = generateMockUsers('active', count);
+        setStatusFilter('Active');
+        break;
+      case 'banned':
+        count = 1;
+        mockUsers = generateMockUsers('banned', count);
+        setStatusFilter('Banned');
+        break;
+      default:
+        count = 5;
+        mockUsers = generateMockUsers('authorized', count);
+        setStatusFilter('All');
+    }
+    
+    setUsers(mockUsers);
+  }, [searchParams]);
 
-  const filteredUsers = mockUsers.filter(user => {
+  const filteredUsers = users.filter(user => {
     const matchesSearch = user.email.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'All' || user.status === statusFilter;
     return matchesSearch && matchesStatus;
@@ -68,6 +96,7 @@ const UserTable = () => {
   const getStatusBadge = (status: User['status']) => {
     const variants = {
       'Authorized': 'default',
+      'Active': 'default',
       'Banned': 'destructive', 
       'Suspended': 'secondary'
     } as const;
@@ -119,6 +148,7 @@ const UserTable = () => {
             <SelectContent>
               <SelectItem value="All">All Users</SelectItem>
               <SelectItem value="Authorized">Authorized Users</SelectItem>
+              <SelectItem value="Active">Active Users</SelectItem>
               <SelectItem value="Banned">Banned Users</SelectItem>
               <SelectItem value="Suspended">Suspended Users</SelectItem>
             </SelectContent>
