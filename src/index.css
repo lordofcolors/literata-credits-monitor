@@ -117,6 +117,7 @@
     /* Stroke Colors - Dark Mode */
     --stroke-primary: 215 10% 50%;   /* slate/500 */
     --stroke-strong: 215 25% 35%;
+  }
 }
 
 @layer base {
