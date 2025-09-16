@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Users, BarChart3, Settings, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -11,12 +12,17 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children, currentPage = 'dashboard' }: AdminLayoutProps) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
   
   const navItems = [
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'users', label: 'Users', icon: Users, path: '/users' },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3, path: '/analytics' },
+    { id: 'settings', label: 'Settings', icon: Settings, path: '/settings' },
   ];
+
+  const handleNavClick = (path: string) => {
+    navigate(path);
+  };
 
   return (
     <div className="min-h-screen bg-background dark">
@@ -37,6 +43,7 @@ const AdminLayout = ({ children, currentPage = 'dashboard' }: AdminLayoutProps) 
                   key={item.id}
                   variant={currentPage === item.id ? 'default' : 'ghost'}
                   className="flex items-center space-x-2"
+                  onClick={() => handleNavClick(item.path)}
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>

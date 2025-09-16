@@ -1,9 +1,7 @@
 import AdminLayout from '@/components/AdminLayout';
 import StatCard from '@/components/StatCard';
 import SystemStatus from '@/components/SystemStatus';
-import QuickActions from '@/components/QuickActions';
 import RecentUsers from '@/components/RecentUsers';
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Users, UserCheck, UserX, Brain } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
@@ -67,44 +65,8 @@ const Dashboard = () => {
           />
         </div>
 
-        {/* Main Content - Resizable Layout */}
-        <ResizablePanelGroup direction="horizontal" className="gap-6">
-          {/* Left Column - Stats and Quick Actions */}
-          <ResizablePanel defaultSize={30} minSize={25} maxSize={40}>
-            <div className="space-y-6">
-              <div className="bg-card p-6 rounded-lg border">
-                <h3 className="text-lg font-semibold mb-4">AI Credits Admin Portal Stats</h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Admin Users</span>
-                    <span className="font-medium">1</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Active</span>
-                    <span className="font-medium">1</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Staff</span>
-                    <span className="font-medium">6</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Suspended</span>
-                    <span className="font-medium">1</span>
-                  </div>
-                </div>
-              </div>
-              
-              <QuickActions />
-            </div>
-          </ResizablePanel>
-
-          <ResizableHandle withHandle />
-
-          {/* Right Column - Recent Users */}
-          <ResizablePanel defaultSize={70} minSize={60}>
-            <RecentUsers />
-          </ResizablePanel>
-        </ResizablePanelGroup>
+        {/* Recent Users */}
+        <RecentUsers />
 
         {/* System Status */}
         <SystemStatus />

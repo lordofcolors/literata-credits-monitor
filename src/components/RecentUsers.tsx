@@ -1,9 +1,12 @@
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MoreHorizontal, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { MoreHorizontal, TrendingUp, TrendingDown, Minus, Search, ChevronUp, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import UserActions from '@/components/UserActions';
 
 interface RecentUser {
   id: string;
@@ -20,8 +23,14 @@ interface RecentUser {
   trend: 'up' | 'down' | 'stable';
 }
 
+type SortField = 'name' | 'email' | 'status' | 'tier' | 'creditsUsed' | 'dailyUsage' | 'apiCalls' | 'lastActivity';
+type SortDirection = 'asc' | 'desc';
+
 const RecentUsers = () => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState<SortField>('lastActivity');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   
   const recentUsers: RecentUser[] = [
     {
@@ -213,16 +222,81 @@ const RecentUsers = () => {
     navigate('/users');
   };
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) return null;
+    return sortDirection === 'asc' ? 
+      <ChevronUp className="h-3 w-3 inline ml-1" /> : 
+      <ChevronDown className="h-3 w-3 inline ml-1" />;
+  };
+
+  const filteredAndSortedUsers = useMemo(() => {
+    let filtered = recentUsers.filter(user => 
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    filtered.sort((a, b) => {
+      let aValue: any = a[sortField];
+      let bValue: any = b[sortField];
+
+      // Handle special cases
+      if (sortField === 'lastActivity') {
+        // Convert to sortable format
+        const timeToMinutes = (time: string) => {
+          if (time === 'Never') return Infinity;
+          if (time.includes('minute')) return parseInt(time);
+          if (time.includes('hour')) return parseInt(time) * 60;
+          if (time.includes('day')) return parseInt(time) * 1440;
+          return 0;
+        };
+        aValue = timeToMinutes(aValue);
+        bValue = timeToMinutes(bValue);
+      }
+
+      if (typeof aValue === 'string') {
+        aValue = aValue.toLowerCase();
+        bValue = bValue.toLowerCase();
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      } else {
+        return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+      }
+    });
+
+    return filtered;
+  }, [recentUsers, searchQuery, sortField, sortDirection]);
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Recent Users</CardTitle>
+        <CardTitle>All Users</CardTitle>
         <Button variant="outline" size="sm" onClick={handleViewAll}>
           View All
         </Button>
       </CardHeader>
       <CardContent>
-        {recentUsers.length === 0 ? (
+        {/* Search */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        {filteredAndSortedUsers.length === 0 ? (
           <div className="text-center py-8">
             <p className="text-muted-foreground">Unable to load authenticated users.</p>
             <p className="text-sm text-muted-foreground mt-1">
@@ -234,19 +308,33 @@ const RecentUsers = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">USER</th>
-                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">STATUS</th>
-                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">TIER</th>
-                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">CREDITS USED</th>
-                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">DAILY USAGE</th>
-                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">API CALLS</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => handleSort('name')}>
+                    USER{getSortIcon('name')}
+                  </th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => handleSort('status')}>
+                    STATUS{getSortIcon('status')}
+                  </th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => handleSort('tier')}>
+                    TIER{getSortIcon('tier')}
+                  </th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => handleSort('creditsUsed')}>
+                    CREDITS USED{getSortIcon('creditsUsed')}
+                  </th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => handleSort('dailyUsage')}>
+                    DAILY USAGE{getSortIcon('dailyUsage')}
+                  </th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => handleSort('apiCalls')}>
+                    API CALLS{getSortIcon('apiCalls')}
+                  </th>
                   <th className="text-left py-3 text-sm font-medium text-muted-foreground">TREND</th>
-                  <th className="text-left py-3 text-sm font-medium text-muted-foreground">LAST ACTIVITY</th>
+                  <th className="text-left py-3 text-sm font-medium text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => handleSort('lastActivity')}>
+                    LAST ACTIVITY{getSortIcon('lastActivity')}
+                  </th>
                   <th className="text-left py-3 text-sm font-medium text-muted-foreground">ACTIONS</th>
                 </tr>
               </thead>
               <tbody>
-                {recentUsers.map((user) => (
+                {filteredAndSortedUsers.map((user) => (
                   <tr 
                     key={user.id} 
                     className="border-b hover:bg-muted/50 cursor-pointer"
@@ -273,16 +361,11 @@ const RecentUsers = () => {
                     <td className="py-4">{getTrendIcon(user.trend)}</td>
                     <td className="py-4 text-sm text-muted-foreground">{user.lastActivity}</td>
                     <td className="py-4">
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          // Handle menu actions
-                        }}
-                      >
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      <UserActions 
+                        userId={user.id}
+                        userEmail={user.email}
+                        userStatus={user.status}
+                      />
                     </td>
                   </tr>
                 ))}
