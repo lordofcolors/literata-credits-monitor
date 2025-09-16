@@ -39,6 +39,7 @@ interface User {
   name: string;
   email: string;
   status: 'active' | 'inactive' | 'banned';
+  userType: 'anonymous' | 'registered';
   type: 'authorized' | 'pending' | 'trial';
   lastLogin: string;
   inputTokens: number;
@@ -54,15 +55,16 @@ const UserManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<SortField>('lastLogin');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
-  const [filterType, setFilterType] = useState<'all' | 'banned'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'anonymous' | 'registered' | 'banned'>('all');
 
-  // Mock user data - 100 entries with some over 100% usage
+  // Mock user data - 85 entries total: 55 registered + 30 anonymous
   const users: User[] = [
     {
       id: '1',
       name: 'David Tanner',
       email: 'david.tanner@oak.com',
       status: 'active',
+      userType: 'registered',
       type: 'authorized',
       lastLogin: '2024-09-16T10:30:00Z',
       inputTokens: 271212,
@@ -76,6 +78,7 @@ const UserManagement = () => {
       name: 'Kris Luongmatanski',
       email: 'kris.luongmatanski@gmail.com',
       status: 'banned',
+      userType: 'registered',
       type: 'authorized',
       lastLogin: '2024-09-16T09:15:00Z',
       inputTokens: 161865,
@@ -89,6 +92,7 @@ const UserManagement = () => {
       name: 'Cuong Pham',
       email: 'cuong.pham@edu.com',
       status: 'active',
+      userType: 'registered',
       type: 'trial',
       lastLogin: '2024-09-16T08:45:00Z',
       inputTokens: 18337,
@@ -102,6 +106,7 @@ const UserManagement = () => {
       name: 'Marcus Rodriguez',
       email: 'marcus.r@company.io',
       status: 'banned',
+      userType: 'anonymous',
       type: 'authorized',
       lastLogin: '2024-09-15T16:20:00Z',
       inputTokens: 625680,
@@ -115,6 +120,7 @@ const UserManagement = () => {
       name: 'Sarah Chen',
       email: 'sarah.chen@startup.co',
       status: 'active',
+      userType: 'registered',
       type: 'pending',
       lastLogin: '2024-09-16T07:30:00Z',
       inputTokens: 9245,
@@ -123,10 +129,11 @@ const UserManagement = () => {
       cost: 0.52,
       usage: 12.3
     },
-    ...Array.from({ length: 95 }, (_, i) => {
-      // Create 8 banned users with high usage (over 100%)
+    ...Array.from({ length: 80 }, (_, i) => {
+      // Create mix of anonymous and registered users
+      const isAnonymous = i < 25; // First 25 are anonymous (30 total including Marcus)
       const isBannedUser = i < 8;
-      const baseUsage = isBannedUser ? 120 + Math.random() * 50 : Math.random() * 90; // Banned: 120-170%, Others: 0-90%
+      const baseUsage = isBannedUser ? 120 + Math.random() * 50 : Math.random() * 90;
       const inputTokens = Math.floor(Math.random() * 500000) + 1000;
       const outputTokens = Math.floor(Math.random() * 200000) + 500;
       
@@ -152,9 +159,10 @@ const UserManagement = () => {
           'Drew Collins', 'Eden Sanders', 'Falcon Wood', 'Gemma Rogers', 'Hendrix Price',
           'Ivy Carter', 'Jett Richardson', 'Kira Cox', 'Lexi Howard', 'Miles Sanders',
           'Nova Bennett', 'Orion Gray', 'Phoenix Torres', 'River Stone', 'Sage Miller'
-        ][i % 85],
-        email: `user${i + 6}@${['gmail.com', 'xolv.com', 'gmail.com', 'xolv.com', 'gmail.com', 'xolv.com'][i % 6]}`,
+        ][i % 75],
+        email: isAnonymous ? `anon-${i + 6}@temp.com` : `user${i + 6}@${['gmail.com', 'xolv.com'][i % 2]}`,
         status: isBannedUser ? 'banned' : (['active', 'inactive'][i % 2]) as 'active' | 'inactive' | 'banned',
+        userType: isAnonymous ? 'anonymous' as const : 'registered' as const,
         type: ['authorized', 'pending', 'trial'][i % 3] as 'authorized' | 'pending' | 'trial',
         lastLogin: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
         inputTokens,
@@ -182,6 +190,10 @@ const UserManagement = () => {
       
       if (filterType === 'banned') {
         return matchesSearch && user.status === 'banned';
+      } else if (filterType === 'anonymous') {
+        return matchesSearch && user.userType === 'anonymous';
+      } else if (filterType === 'registered') {
+        return matchesSearch && user.userType === 'registered';
       }
       
       return matchesSearch;
@@ -252,18 +264,45 @@ const UserManagement = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card 
             className={`cursor-pointer transition-colors ${filterType === 'all' ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'}`}
             onClick={() => setFilterType('all')}
           >
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <Users className="h-5 w-5 text-blue-500" />
+                <Users className="h-4 w-4 text-blue-500" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Total Users</p>
-                  <p className="text-2xl font-bold">{users.length}</p>
-                  <p className="text-xs text-muted-foreground">Click to view all</p>
+                  <p className="text-xs text-muted-foreground">Total Users</p>
+                  <p className="text-xl font-bold">{users.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card 
+            className={`cursor-pointer transition-colors ${filterType === 'anonymous' ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'}`}
+            onClick={() => setFilterType('anonymous')}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-2">
+                <UserX className="h-4 w-4 text-orange-500" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Anonymous Users</p>
+                  <p className="text-xl font-bold">{users.filter(u => u.userType === 'anonymous').length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card 
+            className={`cursor-pointer transition-colors ${filterType === 'registered' ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'}`}
+            onClick={() => setFilterType('registered')}
+          >
+            <CardContent className="p-4">
+              <div className="flex items-center space-x-2">
+                <Users className="h-4 w-4 text-green-500" />
+                <div>
+                  <p className="text-xs text-muted-foreground">Registered Users</p>
+                  <p className="text-xl font-bold">{users.filter(u => u.userType === 'registered').length}</p>
                 </div>
               </div>
             </CardContent>
@@ -272,13 +311,12 @@ const UserManagement = () => {
             className={`cursor-pointer transition-colors ${filterType === 'banned' ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'}`}
             onClick={() => setFilterType('banned')}
           >
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <Ban className="h-5 w-5 text-red-500" />
+                <Ban className="h-4 w-4 text-red-500" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Banned Users</p>
-                  <p className="text-2xl font-bold">{users.filter(u => u.status === 'banned').length}</p>
-                  <p className="text-xs text-muted-foreground">Click to view banned</p>
+                  <p className="text-xs text-muted-foreground">Banned Users</p>
+                  <p className="text-xl font-bold">{users.filter(u => u.status === 'banned').length}</p>
                 </div>
               </div>
             </CardContent>
@@ -290,7 +328,9 @@ const UserManagement = () => {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle>
-                {filterType === 'all' ? 'All Users' : 'Banned Users'} 
+                {filterType === 'all' ? 'All Users' : 
+                 filterType === 'anonymous' ? 'Anonymous Users' :
+                 filterType === 'registered' ? 'Registered Users' : 'Banned Users'} 
                 <span className="text-sm font-normal text-muted-foreground ml-2">
                   ({filteredAndSortedUsers.length} {filteredAndSortedUsers.length === 1 ? 'user' : 'users'})
                 </span>
@@ -316,7 +356,8 @@ const UserManagement = () => {
                   <SortableHeader field="name">User</SortableHeader>
                   <SortableHeader field="email">Email</SortableHeader>
                   <SortableHeader field="status">Status</SortableHeader>
-                  <SortableHeader field="type">Type</SortableHeader>
+                  <TableHead>User Type</TableHead>
+                  <SortableHeader field="type">Account Type</SortableHeader>
                   <SortableHeader field="lastLogin">Last Login</SortableHeader>
                   <SortableHeader field="inputTokens">Input Tokens</SortableHeader>
                   <SortableHeader field="outputTokens">Output Tokens</SortableHeader>
@@ -340,6 +381,13 @@ const UserManagement = () => {
                         variant={user.status === 'active' ? 'default' : user.status === 'banned' ? 'destructive' : 'secondary'}
                       >
                         {user.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={user.userType === 'registered' ? 'default' : 'secondary'}
+                      >
+                        {user.userType}
                       </Badge>
                     </TableCell>
                     <TableCell>
