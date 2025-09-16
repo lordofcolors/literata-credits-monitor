@@ -153,7 +153,7 @@ const UserManagement = () => {
           'Ivy Carter', 'Jett Richardson', 'Kira Cox', 'Lexi Howard', 'Miles Sanders',
           'Nova Bennett', 'Orion Gray', 'Phoenix Torres', 'River Stone', 'Sage Miller'
         ][i % 85],
-        email: `user${i + 6}@${['gmail.com', 'yahoo.com', 'company.co', 'startup.io', 'tech.org', 'business.net'][i % 6]}`,
+        email: `user${i + 6}@${['gmail.com', 'xolv.com', 'gmail.com', 'xolv.com', 'gmail.com', 'xolv.com'][i % 6]}`,
         status: (isHighUsage && baseUsage > 120) ? 'banned' : (['active', 'inactive', 'banned'][i % 3]) as 'active' | 'inactive' | 'banned',
         type: ['authorized', 'pending', 'trial'][i % 3] as 'authorized' | 'pending' | 'trial',
         lastLogin: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
@@ -331,7 +331,11 @@ const UserManagement = () => {
               </TableHeader>
               <TableBody>
                 {filteredAndSortedUsers.map((user) => (
-                  <TableRow key={user.id}>
+                  <TableRow 
+                    key={user.id}
+                    className="cursor-pointer hover:bg-muted/50"
+                    onDoubleClick={() => navigate(`/users/${user.id}`)}
+                  >
                     <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
