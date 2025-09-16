@@ -211,7 +211,7 @@ const UserProfile = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
+            <div className="h-80">
               <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={timelineData}>

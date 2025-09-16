@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { 
   Users, 
-  UserCheck, 
   UserX, 
   Search, 
   MoreHorizontal, 
@@ -246,7 +245,7 @@ const UserManagement = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
@@ -261,10 +260,11 @@ const UserManagement = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <UserCheck className="h-5 w-5 text-green-500" />
+                <Shield className="h-5 w-5 text-green-500" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Active Users</p>
-                  <p className="text-2xl font-bold">{users.filter(u => u.status === 'active').length}</p>
+                  <p className="text-sm text-muted-foreground">Authorized Users</p>
+                  <p className="text-2xl font-bold">{users.filter(u => u.type === 'authorized').length}</p>
+                  <p className="text-xs text-muted-foreground">Approved for full access</p>
                 </div>
               </div>
             </CardContent>
@@ -276,17 +276,7 @@ const UserManagement = () => {
                 <div>
                   <p className="text-sm text-muted-foreground">Banned Users</p>
                   <p className="text-2xl font-bold">{users.filter(u => u.status === 'banned').length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-yellow-500" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Authorized</p>
-                  <p className="text-2xl font-bold">{users.filter(u => u.type === 'authorized').length}</p>
+                  <p className="text-xs text-muted-foreground">Access revoked</p>
                 </div>
               </div>
             </CardContent>
