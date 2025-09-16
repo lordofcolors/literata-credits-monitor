@@ -55,7 +55,7 @@ const UserManagement = () => {
   const [sortField, setSortField] = useState<SortField>('lastLogin');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-  // Mock user data
+  // Mock user data - 100 entries
   const users: User[] = [
     {
       id: '1',
@@ -121,7 +121,43 @@ const UserManagement = () => {
       totalTokens: 13368,
       cost: 0.52,
       usage: 12.3
-    }
+    },
+    ...Array.from({ length: 95 }, (_, i) => ({
+      id: `${i + 6}`,
+      name: [
+        'Alexandra Thompson', 'Benjamin Park', 'Charlotte Wilson', 'Daniel Kim', 'Elena Rodriguez',
+        'Felix Anderson', 'Grace Liu', 'Harrison Smith', 'Isabella Garcia', 'Jack Thompson',
+        'Katherine Brown', 'Liam Davis', 'Maya Patel', 'Nathan Williams', 'Olivia Johnson',
+        'Patrick Miller', 'Quinn Taylor', 'Rachel Green', 'Samuel Lee', 'Tessa Clark',
+        'Ulysses Martinez', 'Victoria Adams', 'William Chen', 'Xiara Lopez', 'Yasmin Ali',
+        'Zachary Turner', 'Amelia Foster', 'Blake Harrison', 'Chloe Wright', 'Diego Santos',
+        'Emma Peterson', 'Finn O\'Connor', 'Gabriela Silva', 'Hunter Reid', 'Iris Wang',
+        'Julian Morales', 'Kara Stevens', 'Lucas Mitchell', 'Mia Rodriguez', 'Noah Cooper',
+        'Penelope Hayes', 'Quinn Anderson', 'Ruby Martinez', 'Sebastian Torres', 'Talia Nguyen',
+        'Uriel Gonzalez', 'Vera Campbell', 'Wesley Kim', 'Xander Phillips', 'Yuki Tanaka',
+        'Zoe Rivera', 'Aaron Butler', 'Bianca Morris', 'Caleb Ward', 'Delilah Brooks',
+        'Ethan Powell', 'Fiona Kelly', 'Gabriel Ross', 'Hazel Barnes', 'Ivan Price',
+        'Jade Coleman', 'Kyle Fisher', 'Luna Ward', 'Mason Hughes', 'Nora Bell',
+        'Oscar Cruz', 'Paige Russell', 'Quinton Gray', 'Raven Cooper', 'Sean Murphy',
+        'Thea Jenkins', 'Ulrich Perry', 'Violet Reed', 'Walter Cook', 'Xenia Bailey',
+        'York Patterson', 'Zelda Morgan', 'Atlas Parker', 'Blair Edwards', 'Cruz Stewart',
+        'Drew Collins', 'Eden Sanders', 'Falcon Wood', 'Gemma Rogers', 'Hendrix Price',
+        'Ivy Carter', 'Jett Richardson', 'Kira Cox', 'Lexi Howard', 'Miles Sanders',
+        'Nova Bennett', 'Orion Gray', 'Phoenix Torres', 'River Stone', 'Sage Miller'
+      ][i % 85],
+      email: `user${i + 6}@${['gmail.com', 'yahoo.com', 'company.co', 'startup.io', 'tech.org', 'business.net'][i % 6]}`,
+      status: ['active', 'inactive', 'banned'][i % 3] as 'active' | 'inactive' | 'banned',
+      type: ['authorized', 'pending', 'trial'][i % 3] as 'authorized' | 'pending' | 'trial',
+      lastLogin: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+      inputTokens: Math.floor(Math.random() * 500000) + 1000,
+      outputTokens: Math.floor(Math.random() * 200000) + 500,
+      totalTokens: 0,
+      cost: Math.random() * 50,
+      usage: Math.random() * 100
+    })).map(user => ({
+      ...user,
+      totalTokens: user.inputTokens + user.outputTokens
+    }))
   ];
 
   const handleSort = (field: SortField) => {
