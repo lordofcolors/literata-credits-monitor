@@ -374,16 +374,26 @@ const UserManagement = () => {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-background border-border shadow-lg z-50">
+                        <DropdownMenuContent 
+                          align="end" 
+                          className="bg-background border-border shadow-lg z-50 min-w-[160px]"
+                          style={{
+                            backgroundColor: 'hsl(var(--background))',
+                            borderColor: 'hsl(var(--border))',
+                            color: 'hsl(var(--foreground))'
+                          }}
+                        >
                           <DropdownMenuItem 
                             onClick={() => handleUserAction(user.id, 'view')}
                             className="text-foreground hover:bg-muted focus:bg-muted cursor-pointer"
+                            style={{ color: 'hsl(var(--foreground))' }}
                           >
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => handleUserAction(user.id, 'reset')}
                             className="text-foreground hover:bg-muted focus:bg-muted cursor-pointer"
+                            style={{ color: 'hsl(var(--foreground))' }}
                           >
                             Reset Credits
                           </DropdownMenuItem>
@@ -391,6 +401,7 @@ const UserManagement = () => {
                             <DropdownMenuItem 
                               onClick={() => handleUserAction(user.id, 'ban')}
                               className="text-red-400 hover:bg-red-950/50 focus:bg-red-950/50 cursor-pointer"
+                              style={{ color: 'hsl(0 84.2% 60.2%)' }}
                             >
                               <Ban className="h-4 w-4 mr-2" />
                               Ban User
@@ -399,6 +410,7 @@ const UserManagement = () => {
                           <DropdownMenuItem 
                             onClick={() => handleUserAction(user.id, 'remove')}
                             className="text-red-400 hover:bg-red-950/50 focus:bg-red-950/50 cursor-pointer"
+                            style={{ color: 'hsl(0 84.2% 60.2%)' }}
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Remove User
