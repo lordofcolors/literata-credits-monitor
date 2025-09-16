@@ -89,9 +89,9 @@ const UserProfile = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={() => navigate('/users')}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 bg-background border-border text-foreground hover:bg-muted hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4" />
               <span>Back to Dashboard</span>
