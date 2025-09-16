@@ -376,32 +376,43 @@ const UserManagement = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent 
                           align="end" 
-                          className="bg-background border-border shadow-lg z-50 min-w-[160px]"
+                          className="bg-background border-border shadow-lg z-50 min-w-[160px] dark"
                           style={{
-                            backgroundColor: 'hsl(var(--background))',
-                            borderColor: 'hsl(var(--border))',
-                            color: 'hsl(var(--foreground))'
+                            backgroundColor: 'hsl(var(--background)) !important',
+                            borderColor: 'hsl(var(--border)) !important',
+                            color: 'hsl(var(--foreground)) !important',
+                            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5) !important'
                           }}
+                          sideOffset={4}
                         >
                           <DropdownMenuItem 
                             onClick={() => handleUserAction(user.id, 'view')}
-                            className="text-foreground hover:bg-muted focus:bg-muted cursor-pointer"
-                            style={{ color: 'hsl(var(--foreground))' }}
+                            className="text-foreground hover:bg-muted focus:bg-muted cursor-pointer px-4 py-2"
+                            style={{ 
+                              color: 'hsl(var(--foreground)) !important',
+                              backgroundColor: 'transparent !important'
+                            }}
                           >
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem 
                             onClick={() => handleUserAction(user.id, 'reset')}
-                            className="text-foreground hover:bg-muted focus:bg-muted cursor-pointer"
-                            style={{ color: 'hsl(var(--foreground))' }}
+                            className="text-foreground hover:bg-muted focus:bg-muted cursor-pointer px-4 py-2"
+                            style={{ 
+                              color: 'hsl(var(--foreground)) !important',
+                              backgroundColor: 'transparent !important'
+                            }}
                           >
                             Reset Credits
                           </DropdownMenuItem>
                           {user.status !== 'banned' && (
                             <DropdownMenuItem 
                               onClick={() => handleUserAction(user.id, 'ban')}
-                              className="text-red-400 hover:bg-red-950/50 focus:bg-red-950/50 cursor-pointer"
-                              style={{ color: 'hsl(0 84.2% 60.2%)' }}
+                              className="text-red-400 hover:bg-red-950/50 focus:bg-red-950/50 cursor-pointer px-4 py-2"
+                              style={{ 
+                                color: 'hsl(0 84.2% 60.2%) !important',
+                                backgroundColor: 'transparent !important'
+                              }}
                             >
                               <Ban className="h-4 w-4 mr-2" />
                               Ban User
@@ -409,8 +420,11 @@ const UserManagement = () => {
                           )}
                           <DropdownMenuItem 
                             onClick={() => handleUserAction(user.id, 'remove')}
-                            className="text-red-400 hover:bg-red-950/50 focus:bg-red-950/50 cursor-pointer"
-                            style={{ color: 'hsl(0 84.2% 60.2%)' }}
+                            className="text-red-400 hover:bg-red-950/50 focus:bg-red-950/50 cursor-pointer px-4 py-2"
+                            style={{ 
+                              color: 'hsl(0 84.2% 60.2%) !important',
+                              backgroundColor: 'transparent !important'
+                            }}
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Remove User
