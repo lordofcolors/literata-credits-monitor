@@ -1,56 +1,361 @@
 import AdminLayout from '@/components/AdminLayout';
-import UserTable from '@/components/UserTable';
-import StatCard from '@/components/StatCard';
-import { Users, UserCheck, UserX, UserPlus } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { 
+  Users, 
+  UserCheck, 
+  UserX, 
+  Search, 
+  MoreHorizontal, 
+  ChevronUp, 
+  ChevronDown,
+  Ban,
+  Trash2,
+  Shield
+} from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { useToast } from '@/hooks/use-toast';
+
+type SortField = 'name' | 'email' | 'status' | 'type' | 'lastLogin' | 'inputTokens' | 'outputTokens' | 'totalTokens' | 'cost' | 'usage';
+type SortDirection = 'asc' | 'desc';
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  status: 'active' | 'inactive' | 'banned';
+  type: 'authorized' | 'pending' | 'trial';
+  lastLogin: string;
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  cost: number;
+  usage: number;
+}
 
 const UserManagement = () => {
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState<SortField>('lastLogin');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+  // Mock user data
+  const users: User[] = [
+    {
+      id: '1',
+      name: 'David Tanner',
+      email: 'david.tanner@oak.com',
+      status: 'active',
+      type: 'authorized',
+      lastLogin: '2024-09-16T10:30:00Z',
+      inputTokens: 271212,
+      outputTokens: 118235,
+      totalTokens: 389447,
+      cost: 15.28,
+      usage: 85.2
+    },
+    {
+      id: '2', 
+      name: 'Kris Luongmatanski',
+      email: 'kris.luongmatanski@gmail.com',
+      status: 'active',
+      type: 'authorized',
+      lastLogin: '2024-09-16T09:15:00Z',
+      inputTokens: 61865,
+      outputTokens: 26171,
+      totalTokens: 88036,
+      cost: 3.45,
+      usage: 62.1
+    },
+    {
+      id: '3',
+      name: 'Cuong Pham',
+      email: 'cuong.pham@edu.com',
+      status: 'active',
+      type: 'trial',
+      lastLogin: '2024-09-16T08:45:00Z',
+      inputTokens: 18337,
+      outputTokens: 7868,
+      totalTokens: 26205,
+      cost: 1.03,
+      usage: 24.7
+    },
+    {
+      id: '4',
+      name: 'Marcus Rodriguez',
+      email: 'marcus.r@company.io',
+      status: 'banned',
+      type: 'authorized',
+      lastLogin: '2024-09-15T16:20:00Z',
+      inputTokens: 425680,
+      outputTokens: 189234,
+      totalTokens: 614914,
+      cost: 24.12,
+      usage: 98.7
+    },
+    {
+      id: '5',
+      name: 'Sarah Chen',
+      email: 'sarah.chen@startup.co',
+      status: 'active',
+      type: 'pending',
+      lastLogin: '2024-09-16T07:30:00Z',
+      inputTokens: 9245,
+      outputTokens: 4123,
+      totalTokens: 13368,
+      cost: 0.52,
+      usage: 12.3
+    }
+  ];
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  const filteredAndSortedUsers = useMemo(() => {
+    let filtered = users.filter(user =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    return filtered.sort((a, b) => {
+      let aValue: any = a[sortField];
+      let bValue: any = b[sortField];
+
+      if (sortField === 'lastLogin') {
+        aValue = new Date(aValue).getTime();
+        bValue = new Date(bValue).getTime();
+      }
+
+      if (sortDirection === 'asc') {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+  }, [searchQuery, sortField, sortDirection, users]);
+
+  const handleUserAction = (userId: string, action: string) => {
+    toast({
+      title: `User ${action}`,
+      description: `User action "${action}" has been executed.`,
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const SortableHeader = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
+    <TableHead 
+      className="cursor-pointer hover:bg-muted/50 select-none"
+      onClick={() => handleSort(field)}
+    >
+      <div className="flex items-center space-x-1">
+        <span>{children}</span>
+        {sortField === field && (
+          sortDirection === 'asc' ? 
+            <ChevronUp className="h-4 w-4" /> : 
+            <ChevronDown className="h-4 w-4" />
+        )}
+      </div>
+    </TableHead>
+  );
+
   return (
     <AdminLayout currentPage="users">
       <div className="space-y-6">
-        {/* Header Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <StatCard
-            title="Total Authorized Users"
-            value="0"
-            subtitle="Showing 0"
-            icon={Users}
-            iconColor="blue"
-          />
-          <StatCard
-            title="Current Filter"
-            value="Authorized"
-            subtitle="No search"
-            icon={UserCheck}
-            iconColor="green"
-          />
-          <StatCard
-            title="Page"
-            value="1"
-            subtitle="of 1"
-            icon={UserPlus}
-            iconColor="cyan"
-          />
-          <StatCard
-            title="Storage Admin Users"
-            value="32"
-            subtitle="Per reference"
-            icon={UserX}
-            iconColor="yellow"
-          />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Users className="h-6 w-6" />
+            <h1 className="text-2xl font-bold">User Management</h1>
+          </div>
         </div>
 
-        {/* API Connection Warning */}
-        <Alert className="border-admin-warning bg-admin-warning/10">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertDescription>
-            <strong>AI Credits API Connection Issue:</strong> Failed to fetch users. HTTPSConnectionPool(host='localhost', port=5443): Max retries exceeded with url: /ai-credits-backend-dev/us-west2/explore/internal/admin/users?filter=authorized (Caused by NewConnectionError('&lt;urllib3.connection.HTTPSConnection object at 0x7ff9b31be40&gt;': Failed to establish a new connection: [Errno 111] Connection refused'))
-          </AlertDescription>
-        </Alert>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <Users className="h-5 w-5 text-blue-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Users</p>
+                  <p className="text-2xl font-bold">{users.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <UserCheck className="h-5 w-5 text-green-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Active Users</p>
+                  <p className="text-2xl font-bold">{users.filter(u => u.status === 'active').length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <UserX className="h-5 w-5 text-red-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Banned Users</p>
+                  <p className="text-2xl font-bold">{users.filter(u => u.status === 'banned').length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <Shield className="h-5 w-5 text-yellow-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Authorized</p>
+                  <p className="text-2xl font-bold">{users.filter(u => u.type === 'authorized').length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-        {/* User Management Table */}
-        <UserTable />
+        {/* Search and Table */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>User Token Usage</CardTitle>
+              <div className="flex items-center space-x-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search users..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 w-64"
+                  />
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <SortableHeader field="name">User</SortableHeader>
+                  <SortableHeader field="email">Email</SortableHeader>
+                  <SortableHeader field="status">Status</SortableHeader>
+                  <SortableHeader field="type">Type</SortableHeader>
+                  <SortableHeader field="lastLogin">Last Login</SortableHeader>
+                  <SortableHeader field="inputTokens">Input Tokens</SortableHeader>
+                  <SortableHeader field="outputTokens">Output Tokens</SortableHeader>
+                  <SortableHeader field="totalTokens">Total Tokens</SortableHeader>
+                  <SortableHeader field="cost">Est. Cost</SortableHeader>
+                  <SortableHeader field="usage">Usage %</SortableHeader>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredAndSortedUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={user.status === 'active' ? 'default' : user.status === 'banned' ? 'destructive' : 'secondary'}
+                      >
+                        {user.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {user.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{formatDate(user.lastLogin)}</TableCell>
+                    <TableCell>{user.inputTokens.toLocaleString()}</TableCell>
+                    <TableCell>{user.outputTokens.toLocaleString()}</TableCell>
+                    <TableCell>{user.totalTokens.toLocaleString()}</TableCell>
+                    <TableCell>${user.cost.toFixed(2)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center space-x-2">
+                        <span>{user.usage}%</span>
+                        <div className="w-16 h-2 bg-muted rounded-full">
+                          <div 
+                            className={`h-full rounded-full ${
+                              user.usage > 90 ? 'bg-red-500' : 
+                              user.usage > 70 ? 'bg-yellow-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${Math.min(user.usage, 100)}%` }}
+                          />
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="bg-background border">
+                          <DropdownMenuItem onClick={() => handleUserAction(user.id, 'view')}>
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleUserAction(user.id, 'reset')}>
+                            Reset Credits
+                          </DropdownMenuItem>
+                          {user.status !== 'banned' && (
+                            <DropdownMenuItem 
+                              onClick={() => handleUserAction(user.id, 'ban')}
+                              className="text-red-600"
+                            >
+                              <Ban className="h-4 w-4 mr-2" />
+                              Ban User
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem 
+                            onClick={() => handleUserAction(user.id, 'remove')}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Remove User
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );
