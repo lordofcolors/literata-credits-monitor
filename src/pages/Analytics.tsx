@@ -11,17 +11,35 @@ const Analytics = () => {
           <h1 className="text-2xl font-bold">Analytics</h1>
         </div>
         
-        <Card>
-          <CardHeader>
-            <CardTitle>Credit Usage Analytics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Analytics dashboard coming soon. This will show detailed credit usage patterns, 
-              user behavior analytics, and system performance metrics.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Coming Soon</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Comprehensive analytics dashboard is currently in development.
+              </p>
+              <div className="space-y-2 text-sm text-muted-foreground">
+                <p>• Credit usage patterns and trends</p>
+                <p>• User behavior analytics</p>
+                <p>• System performance metrics</p>
+                <p>• Revenue and billing insights</p>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Stats Preview</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                Real-time analytics and reporting features will be available here soon.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </AdminLayout>
   );

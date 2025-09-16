@@ -41,8 +41,13 @@ const AdminLayout = ({ children, currentPage = 'dashboard' }: AdminLayoutProps) 
               return (
                 <Button
                   key={item.id}
-                  variant={currentPage === item.id ? 'default' : 'ghost'}
-                  className="flex items-center space-x-2"
+                  variant={currentPage === item.id ? 'default' : 'secondary'}
+                  className={cn(
+                    "flex items-center space-x-2",
+                    currentPage === item.id 
+                      ? "bg-primary text-primary-foreground" 
+                      : "bg-muted/30 text-foreground hover:bg-muted/50"
+                  )}
                   onClick={() => handleNavClick(item.path)}
                 >
                   <Icon className="h-4 w-4" />
