@@ -3,13 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   ArrowLeft,
   Download,
   Upload,
   Activity,
   DollarSign,
-  MoreHorizontal
+  MoreHorizontal,
+  MessageSquare
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -262,35 +264,81 @@ const UserProfile = () => {
           </CardContent>
         </Card>
 
-        {/* Daily Summary Table */}
+        {/* Enhanced Tabs with More Features */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Activity className="h-5 w-5" />
-              <span>Daily Summary</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>DATE</TableHead>
-                  <TableHead className="text-center">SESSIONS</TableHead>
-                  <TableHead className="text-center">TOTAL TOKENS</TableHead>
-                  <TableHead className="text-center">AVG PER SESSION</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {dailySummary.map((day, index) => (
-                  <TableRow key={index}>
-                    <TableCell className="font-medium">{day.date}</TableCell>
-                    <TableCell className="text-center">{day.sessions}</TableCell>
-                    <TableCell className="text-center">{day.totalTokens.toLocaleString()}</TableCell>
-                    <TableCell className="text-center">{day.avgPerSession.toLocaleString()}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <CardContent className="p-0">
+            <Tabs defaultValue="summary" className="w-full">
+              <TabsList className="w-full justify-start rounded-none border-b bg-transparent h-auto p-0">
+                <TabsTrigger value="summary" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
+                  Daily Summary
+                </TabsTrigger>
+                <TabsTrigger value="activity" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
+                  Daily Activity
+                </TabsTrigger>
+                <TabsTrigger value="conversations" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary">
+                  Conversations
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="summary" className="mt-0">
+                <div className="p-6">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>DATE</TableHead>
+                        <TableHead className="text-center">SESSIONS</TableHead>
+                        <TableHead className="text-center">TOTAL TOKENS</TableHead>
+                        <TableHead className="text-center">AVG PER SESSION</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {dailySummary.map((day, index) => (
+                        <TableRow key={index}>
+                          <TableCell className="font-medium">{day.date}</TableCell>
+                          <TableCell className="text-center">{day.sessions}</TableCell>
+                          <TableCell className="text-center">{day.totalTokens.toLocaleString()}</TableCell>
+                          <TableCell className="text-center">{day.avgPerSession.toLocaleString()}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="activity" className="mt-0">
+                <div className="p-6">
+                  <div className="text-center py-12 space-y-4">
+                    <Activity className="h-16 w-16 text-muted-foreground mx-auto" />
+                    <h3 className="text-lg font-semibold text-foreground">Daily Activity Coming Soon</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto">
+                      Detailed user activity tracking will be available here soon. This data will flow directly from Mixpanel, 
+                      showing all user actions, interactions, and behavioral patterns.
+                    </p>
+                    <div className="flex items-center justify-center space-x-2 mt-4">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="text-sm text-muted-foreground">Data source: Mixpanel</span>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="conversations" className="mt-0">
+                <div className="p-6">
+                  <div className="text-center py-12 space-y-4">
+                    <MessageSquare className="h-16 w-16 text-muted-foreground mx-auto" />
+                    <h3 className="text-lg font-semibold text-foreground">Agent Conversations Coming Soon</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto">
+                      Recent conversations with AI agents will be displayed here. View conversation history, 
+                      interaction patterns, and agent performance metrics in one place.
+                    </p>
+                    <div className="flex items-center justify-center space-x-2 mt-4">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-sm text-muted-foreground">Integration in progress</span>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
