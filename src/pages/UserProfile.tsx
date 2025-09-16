@@ -115,31 +115,31 @@ const UserProfile = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <Select defaultValue="2025">
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-32 bg-background border-border text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2025">2025</SelectItem>
-                <SelectItem value="2024">2024</SelectItem>
+              <SelectContent className="bg-background border-border">
+                <SelectItem value="2025" className="text-foreground hover:bg-muted">2025</SelectItem>
+                <SelectItem value="2024" className="text-foreground hover:bg-muted">2024</SelectItem>
               </SelectContent>
             </Select>
             
             <Select defaultValue="september">
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-40 bg-background border-border text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="september">September</SelectItem>
-                <SelectItem value="august">August</SelectItem>
-                <SelectItem value="july">July</SelectItem>
+              <SelectContent className="bg-background border-border">
+                <SelectItem value="september" className="text-foreground hover:bg-muted">September</SelectItem>
+                <SelectItem value="august" className="text-foreground hover:bg-muted">August</SelectItem>
+                <SelectItem value="july" className="text-foreground hover:bg-muted">July</SelectItem>
               </SelectContent>
             </Select>
 
-            <Button className="bg-primary text-primary-foreground">
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
               Apply
             </Button>
 
-            <Button variant="ghost">
+            <Button variant="outline" className="border-border text-foreground hover:bg-muted">
               Reset
             </Button>
           </div>
