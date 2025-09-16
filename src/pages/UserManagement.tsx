@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 type SortField = 'name' | 'email' | 'status' | 'type' | 'lastLogin' | 'inputTokens' | 'outputTokens' | 'totalTokens' | 'cost' | 'usage';
 type SortDirection = 'asc' | 'desc';
@@ -51,11 +52,12 @@ interface User {
 
 const UserManagement = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<SortField>('lastLogin');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
-  // Mock user data - 100 entries
+  // Mock user data - 100 entries with some over 100% usage
   const users: User[] = [
     {
       id: '1',
@@ -74,14 +76,14 @@ const UserManagement = () => {
       id: '2', 
       name: 'Kris Luongmatanski',
       email: 'kris.luongmatanski@gmail.com',
-      status: 'active',
+      status: 'banned',
       type: 'authorized',
       lastLogin: '2024-09-16T09:15:00Z',
-      inputTokens: 61865,
-      outputTokens: 26171,
-      totalTokens: 88036,
-      cost: 3.45,
-      usage: 62.1
+      inputTokens: 161865,
+      outputTokens: 86171,
+      totalTokens: 248036,
+      cost: 12.45,
+      usage: 142.3
     },
     {
       id: '3',
@@ -103,11 +105,11 @@ const UserManagement = () => {
       status: 'banned',
       type: 'authorized',
       lastLogin: '2024-09-15T16:20:00Z',
-      inputTokens: 425680,
-      outputTokens: 189234,
-      totalTokens: 614914,
-      cost: 24.12,
-      usage: 98.7
+      inputTokens: 625680,
+      outputTokens: 289234,
+      totalTokens: 914914,
+      cost: 45.12,
+      usage: 178.7
     },
     {
       id: '5',
@@ -122,42 +124,46 @@ const UserManagement = () => {
       cost: 0.52,
       usage: 12.3
     },
-    ...Array.from({ length: 95 }, (_, i) => ({
-      id: `${i + 6}`,
-      name: [
-        'Alexandra Thompson', 'Benjamin Park', 'Charlotte Wilson', 'Daniel Kim', 'Elena Rodriguez',
-        'Felix Anderson', 'Grace Liu', 'Harrison Smith', 'Isabella Garcia', 'Jack Thompson',
-        'Katherine Brown', 'Liam Davis', 'Maya Patel', 'Nathan Williams', 'Olivia Johnson',
-        'Patrick Miller', 'Quinn Taylor', 'Rachel Green', 'Samuel Lee', 'Tessa Clark',
-        'Ulysses Martinez', 'Victoria Adams', 'William Chen', 'Xiara Lopez', 'Yasmin Ali',
-        'Zachary Turner', 'Amelia Foster', 'Blake Harrison', 'Chloe Wright', 'Diego Santos',
-        'Emma Peterson', 'Finn O\'Connor', 'Gabriela Silva', 'Hunter Reid', 'Iris Wang',
-        'Julian Morales', 'Kara Stevens', 'Lucas Mitchell', 'Mia Rodriguez', 'Noah Cooper',
-        'Penelope Hayes', 'Quinn Anderson', 'Ruby Martinez', 'Sebastian Torres', 'Talia Nguyen',
-        'Uriel Gonzalez', 'Vera Campbell', 'Wesley Kim', 'Xander Phillips', 'Yuki Tanaka',
-        'Zoe Rivera', 'Aaron Butler', 'Bianca Morris', 'Caleb Ward', 'Delilah Brooks',
-        'Ethan Powell', 'Fiona Kelly', 'Gabriel Ross', 'Hazel Barnes', 'Ivan Price',
-        'Jade Coleman', 'Kyle Fisher', 'Luna Ward', 'Mason Hughes', 'Nora Bell',
-        'Oscar Cruz', 'Paige Russell', 'Quinton Gray', 'Raven Cooper', 'Sean Murphy',
-        'Thea Jenkins', 'Ulrich Perry', 'Violet Reed', 'Walter Cook', 'Xenia Bailey',
-        'York Patterson', 'Zelda Morgan', 'Atlas Parker', 'Blair Edwards', 'Cruz Stewart',
-        'Drew Collins', 'Eden Sanders', 'Falcon Wood', 'Gemma Rogers', 'Hendrix Price',
-        'Ivy Carter', 'Jett Richardson', 'Kira Cox', 'Lexi Howard', 'Miles Sanders',
-        'Nova Bennett', 'Orion Gray', 'Phoenix Torres', 'River Stone', 'Sage Miller'
-      ][i % 85],
-      email: `user${i + 6}@${['gmail.com', 'yahoo.com', 'company.co', 'startup.io', 'tech.org', 'business.net'][i % 6]}`,
-      status: ['active', 'inactive', 'banned'][i % 3] as 'active' | 'inactive' | 'banned',
-      type: ['authorized', 'pending', 'trial'][i % 3] as 'authorized' | 'pending' | 'trial',
-      lastLogin: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-      inputTokens: Math.floor(Math.random() * 500000) + 1000,
-      outputTokens: Math.floor(Math.random() * 200000) + 500,
-      totalTokens: 0,
-      cost: Math.random() * 50,
-      usage: Math.random() * 100
-    })).map(user => ({
-      ...user,
-      totalTokens: user.inputTokens + user.outputTokens
-    }))
+    ...Array.from({ length: 95 }, (_, i) => {
+      const isHighUsage = i < 10; // First 10 users have high usage (over 100%)
+      const baseUsage = isHighUsage ? 100 + Math.random() * 80 : Math.random() * 100;
+      const inputTokens = Math.floor(Math.random() * 500000) + 1000;
+      const outputTokens = Math.floor(Math.random() * 200000) + 500;
+      
+      return {
+        id: `${i + 6}`,
+        name: [
+          'Alexandra Thompson', 'Benjamin Park', 'Charlotte Wilson', 'Daniel Kim', 'Elena Rodriguez',
+          'Felix Anderson', 'Grace Liu', 'Harrison Smith', 'Isabella Garcia', 'Jack Thompson',
+          'Katherine Brown', 'Liam Davis', 'Maya Patel', 'Nathan Williams', 'Olivia Johnson',
+          'Patrick Miller', 'Quinn Taylor', 'Rachel Green', 'Samuel Lee', 'Tessa Clark',
+          'Ulysses Martinez', 'Victoria Adams', 'William Chen', 'Xiara Lopez', 'Yasmin Ali',
+          'Zachary Turner', 'Amelia Foster', 'Blake Harrison', 'Chloe Wright', 'Diego Santos',
+          'Emma Peterson', 'Finn O\'Connor', 'Gabriela Silva', 'Hunter Reid', 'Iris Wang',
+          'Julian Morales', 'Kara Stevens', 'Lucas Mitchell', 'Mia Rodriguez', 'Noah Cooper',
+          'Penelope Hayes', 'Quinn Anderson', 'Ruby Martinez', 'Sebastian Torres', 'Talia Nguyen',
+          'Uriel Gonzalez', 'Vera Campbell', 'Wesley Kim', 'Xander Phillips', 'Yuki Tanaka',
+          'Zoe Rivera', 'Aaron Butler', 'Bianca Morris', 'Caleb Ward', 'Delilah Brooks',
+          'Ethan Powell', 'Fiona Kelly', 'Gabriel Ross', 'Hazel Barnes', 'Ivan Price',
+          'Jade Coleman', 'Kyle Fisher', 'Luna Ward', 'Mason Hughes', 'Nora Bell',
+          'Oscar Cruz', 'Paige Russell', 'Quinton Gray', 'Raven Cooper', 'Sean Murphy',
+          'Thea Jenkins', 'Ulrich Perry', 'Violet Reed', 'Walter Cook', 'Xenia Bailey',
+          'York Patterson', 'Zelda Morgan', 'Atlas Parker', 'Blair Edwards', 'Cruz Stewart',
+          'Drew Collins', 'Eden Sanders', 'Falcon Wood', 'Gemma Rogers', 'Hendrix Price',
+          'Ivy Carter', 'Jett Richardson', 'Kira Cox', 'Lexi Howard', 'Miles Sanders',
+          'Nova Bennett', 'Orion Gray', 'Phoenix Torres', 'River Stone', 'Sage Miller'
+        ][i % 85],
+        email: `user${i + 6}@${['gmail.com', 'yahoo.com', 'company.co', 'startup.io', 'tech.org', 'business.net'][i % 6]}`,
+        status: (isHighUsage && baseUsage > 120) ? 'banned' : (['active', 'inactive', 'banned'][i % 3]) as 'active' | 'inactive' | 'banned',
+        type: ['authorized', 'pending', 'trial'][i % 3] as 'authorized' | 'pending' | 'trial',
+        lastLogin: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+        inputTokens,
+        outputTokens,
+        totalTokens: inputTokens + outputTokens,
+        cost: Math.random() * 50,
+        usage: baseUsage
+      };
+    })
   ];
 
   const handleSort = (field: SortField) => {
@@ -193,6 +199,11 @@ const UserManagement = () => {
   }, [searchQuery, sortField, sortDirection, users]);
 
   const handleUserAction = (userId: string, action: string) => {
+    if (action === 'view') {
+      navigate(`/users/${userId}`);
+      return;
+    }
+    
     toast({
       title: `User ${action}`,
       description: `User action "${action}" has been executed.`,
@@ -283,8 +294,8 @@ const UserManagement = () => {
         </div>
 
         {/* Search and Table */}
-        <Card>
-          <CardHeader>
+        <Card className="flex-1 min-h-0">
+          <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle>User Token Usage</CardTitle>
               <div className="flex items-center space-x-2">
@@ -300,8 +311,9 @@ const UserManagement = () => {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <Table>
+          <CardContent className="flex-1 min-h-0 p-0">
+            <div className="h-[calc(100vh-320px)] overflow-auto">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <SortableHeader field="name">User</SortableHeader>
@@ -341,11 +353,12 @@ const UserManagement = () => {
                     <TableCell>${user.cost.toFixed(2)}</TableCell>
                     <TableCell>
                       <div className="flex items-center space-x-2">
-                        <span>{user.usage}%</span>
+                        <span className={user.usage > 100 ? 'text-red-500 font-bold' : ''}>{user.usage.toFixed(1)}%</span>
                         <div className="w-16 h-2 bg-muted rounded-full">
                           <div 
                             className={`h-full rounded-full ${
-                              user.usage > 90 ? 'bg-red-500' : 
+                              user.usage > 100 ? 'bg-red-500' : 
+                              user.usage > 90 ? 'bg-orange-500' : 
                               user.usage > 70 ? 'bg-yellow-500' : 'bg-green-500'
                             }`}
                             style={{ width: `${Math.min(user.usage, 100)}%` }}
@@ -386,11 +399,12 @@ const UserManagement = () => {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
         </Card>
       </div>
     </AdminLayout>
