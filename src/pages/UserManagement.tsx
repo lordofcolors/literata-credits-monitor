@@ -245,7 +245,7 @@ const UserManagement = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
@@ -262,9 +262,9 @@ const UserManagement = () => {
               <div className="flex items-center space-x-2">
                 <Shield className="h-5 w-5 text-green-500" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Authorized Users</p>
+                  <p className="text-sm text-muted-foreground">Authorized</p>
                   <p className="text-2xl font-bold">{users.filter(u => u.type === 'authorized').length}</p>
-                  <p className="text-xs text-muted-foreground">Approved for full access</p>
+                  <p className="text-xs text-muted-foreground">Full access granted</p>
                 </div>
               </div>
             </CardContent>
@@ -272,9 +272,21 @@ const UserManagement = () => {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
-                <UserX className="h-5 w-5 text-red-500" />
+                <UserX className="h-5 w-5 text-yellow-500" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Banned Users</p>
+                  <p className="text-sm text-muted-foreground">Pending</p>
+                  <p className="text-2xl font-bold">{users.filter(u => u.type === 'pending').length}</p>
+                  <p className="text-xs text-muted-foreground">Awaiting approval</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-2">
+                <Ban className="h-5 w-5 text-red-500" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Banned</p>
                   <p className="text-2xl font-bold">{users.filter(u => u.status === 'banned').length}</p>
                   <p className="text-xs text-muted-foreground">Access revoked</p>
                 </div>
@@ -371,6 +383,12 @@ const UserManagement = () => {
                           <DropdownMenuItem onClick={() => handleUserAction(user.id, 'view')}>
                             View Details
                           </DropdownMenuItem>
+                          {user.type === 'pending' && (
+                            <DropdownMenuItem onClick={() => handleUserAction(user.id, 'authorize')}>
+                              <Shield className="h-4 w-4 mr-2" />
+                              Authorize User
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem onClick={() => handleUserAction(user.id, 'reset')}>
                             Reset Credits
                           </DropdownMenuItem>
