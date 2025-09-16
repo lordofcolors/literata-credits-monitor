@@ -374,17 +374,23 @@ const UserManagement = () => {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="bg-background border">
-                          <DropdownMenuItem onClick={() => handleUserAction(user.id, 'view')}>
+                        <DropdownMenuContent align="end" className="bg-background border-border shadow-lg z-50">
+                          <DropdownMenuItem 
+                            onClick={() => handleUserAction(user.id, 'view')}
+                            className="text-foreground hover:bg-muted focus:bg-muted cursor-pointer"
+                          >
                             View Details
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleUserAction(user.id, 'reset')}>
+                          <DropdownMenuItem 
+                            onClick={() => handleUserAction(user.id, 'reset')}
+                            className="text-foreground hover:bg-muted focus:bg-muted cursor-pointer"
+                          >
                             Reset Credits
                           </DropdownMenuItem>
                           {user.status !== 'banned' && (
                             <DropdownMenuItem 
                               onClick={() => handleUserAction(user.id, 'ban')}
-                              className="text-red-600"
+                              className="text-red-400 hover:bg-red-950/50 focus:bg-red-950/50 cursor-pointer"
                             >
                               <Ban className="h-4 w-4 mr-2" />
                               Ban User
@@ -392,7 +398,7 @@ const UserManagement = () => {
                           )}
                           <DropdownMenuItem 
                             onClick={() => handleUserAction(user.id, 'remove')}
-                            className="text-red-600"
+                            className="text-red-400 hover:bg-red-950/50 focus:bg-red-950/50 cursor-pointer"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
                             Remove User
