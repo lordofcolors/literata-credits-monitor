@@ -124,8 +124,9 @@ const UserManagement = () => {
       usage: 12.3
     },
     ...Array.from({ length: 95 }, (_, i) => {
-      const isHighUsage = i < 10; // First 10 users have high usage (over 100%)
-      const baseUsage = isHighUsage ? 100 + Math.random() * 80 : Math.random() * 100;
+      // Create 8 banned users with high usage (over 100%)
+      const isBannedUser = i < 8;
+      const baseUsage = isBannedUser ? 120 + Math.random() * 50 : Math.random() * 90; // Banned: 120-170%, Others: 0-90%
       const inputTokens = Math.floor(Math.random() * 500000) + 1000;
       const outputTokens = Math.floor(Math.random() * 200000) + 500;
       
@@ -153,7 +154,7 @@ const UserManagement = () => {
           'Nova Bennett', 'Orion Gray', 'Phoenix Torres', 'River Stone', 'Sage Miller'
         ][i % 85],
         email: `user${i + 6}@${['gmail.com', 'xolv.com', 'gmail.com', 'xolv.com', 'gmail.com', 'xolv.com'][i % 6]}`,
-        status: (isHighUsage && baseUsage > 120) ? 'banned' : (['active', 'inactive', 'banned'][i % 3]) as 'active' | 'inactive' | 'banned',
+        status: isBannedUser ? 'banned' : (['active', 'inactive'][i % 2]) as 'active' | 'inactive' | 'banned',
         type: ['authorized', 'pending', 'trial'][i % 3] as 'authorized' | 'pending' | 'trial',
         lastLogin: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
         inputTokens,
