@@ -25,8 +25,7 @@ import {
   ChevronUp, 
   ChevronDown,
   Ban,
-  Trash2,
-  Shield
+  Trash2
 } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -55,6 +54,7 @@ const UserManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortField, setSortField] = useState<SortField>('lastLogin');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [filterType, setFilterType] = useState<'all' | 'banned'>('all');
 
   // Mock user data - 100 entries with some over 100% usage
   const users: User[] = [
@@ -175,10 +175,16 @@ const UserManagement = () => {
   };
 
   const filteredAndSortedUsers = useMemo(() => {
-    let filtered = users.filter(user =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    let filtered = users.filter(user => {
+      const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      if (filterType === 'banned') {
+        return matchesSearch && user.status === 'banned';
+      }
+      
+      return matchesSearch;
+    });
 
     return filtered.sort((a, b) => {
       let aValue: any = a[sortField];
@@ -195,7 +201,7 @@ const UserManagement = () => {
         return aValue < bValue ? 1 : -1;
       }
     });
-  }, [searchQuery, sortField, sortDirection, users]);
+  }, [searchQuery, sortField, sortDirection, users, filterType]);
 
   const handleUserAction = (userId: string, action: string) => {
     if (action === 'view') {
@@ -245,50 +251,33 @@ const UserManagement = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <Card>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card 
+            className={`cursor-pointer transition-colors ${filterType === 'all' ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'}`}
+            onClick={() => setFilterType('all')}
+          >
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
                 <Users className="h-5 w-5 text-blue-500" />
                 <div>
                   <p className="text-sm text-muted-foreground">Total Users</p>
                   <p className="text-2xl font-bold">{users.length}</p>
+                  <p className="text-xs text-muted-foreground">Click to view all</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <Shield className="h-5 w-5 text-green-500" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Authorized</p>
-                  <p className="text-2xl font-bold">{users.filter(u => u.type === 'authorized').length}</p>
-                  <p className="text-xs text-muted-foreground">Full access granted</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-2">
-                <UserX className="h-5 w-5 text-yellow-500" />
-                <div>
-                  <p className="text-sm text-muted-foreground">Pending</p>
-                  <p className="text-2xl font-bold">{users.filter(u => u.type === 'pending').length}</p>
-                  <p className="text-xs text-muted-foreground">Awaiting approval</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
+          <Card 
+            className={`cursor-pointer transition-colors ${filterType === 'banned' ? 'ring-2 ring-primary bg-primary/5' : 'hover:bg-muted/50'}`}
+            onClick={() => setFilterType('banned')}
+          >
             <CardContent className="p-6">
               <div className="flex items-center space-x-2">
                 <Ban className="h-5 w-5 text-red-500" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Banned</p>
+                  <p className="text-sm text-muted-foreground">Banned Users</p>
                   <p className="text-2xl font-bold">{users.filter(u => u.status === 'banned').length}</p>
-                  <p className="text-xs text-muted-foreground">Access revoked</p>
+                  <p className="text-xs text-muted-foreground">Click to view banned</p>
                 </div>
               </div>
             </CardContent>
@@ -299,7 +288,12 @@ const UserManagement = () => {
         <Card className="flex-1 min-h-0">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle>User Token Usage</CardTitle>
+              <CardTitle>
+                {filterType === 'all' ? 'All Users' : 'Banned Users'} 
+                <span className="text-sm font-normal text-muted-foreground ml-2">
+                  ({filteredAndSortedUsers.length} {filteredAndSortedUsers.length === 1 ? 'user' : 'users'})
+                </span>
+              </CardTitle>
               <div className="flex items-center space-x-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -383,12 +377,6 @@ const UserManagement = () => {
                           <DropdownMenuItem onClick={() => handleUserAction(user.id, 'view')}>
                             View Details
                           </DropdownMenuItem>
-                          {user.type === 'pending' && (
-                            <DropdownMenuItem onClick={() => handleUserAction(user.id, 'authorize')}>
-                              <Shield className="h-4 w-4 mr-2" />
-                              Authorize User
-                            </DropdownMenuItem>
-                          )}
                           <DropdownMenuItem onClick={() => handleUserAction(user.id, 'reset')}>
                             Reset Credits
                           </DropdownMenuItem>
